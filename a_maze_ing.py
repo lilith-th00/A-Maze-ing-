@@ -1,7 +1,6 @@
 import sys
 import config_validation
-import algo
-import maze
+from search import Maze
 """"
 Your program must handle all errors gracefully: invalid configuration,
 file not found, bad syntax, impossible maze parameters, etc.
@@ -21,8 +20,13 @@ def main():
             with open(sys.argv[1], 'r') as file:
                 content = file.read()
                 data = config_validation.validation(content)
-                maze = algo.dfs(data)
-                maze.display(maze)
+                my_maze = Maze(data, 30)
+               #my_maze.my_42()
+                my_maze.wilson()
+                #my_maze.dsf_algorith()
+                #data = my_maze.bfs_algo()
+                #my_maze.output_maze()
+                my_maze.draw()
         except (FileNotFoundError, config_validation.ErrorInConfigFile) as e:
             print(e)
 
