@@ -230,12 +230,71 @@ class Maze:
 
         pygame.quit()
     
-    def wilson(self): #hada khema 3lih db
-        cell = []
-        pat = []
+    def wilson_algo(self):
+        unvisited = []
+
         for r in range(len(self.cells)):
             for c in range(len(self.cells[0])):
-                cell.append((c, r))
-        s_x, s_y = random.choice(cell)
-        self.cells[s_y][s_x].is_visited = True
-        while cell:
+                unvisited.append((c, r))
+        
+        start = random.choice(unvisited)
+        unvisited.remove(start)
+        x, y = start
+        self.cells[y][x].is_visited = True
+    
+        while unvisited:
+            x, y = random.choice(unvisited)
+            path = [(x, y)]
+
+            while (x, y) in unvisited:
+
+                valid_move = False
+
+                while not valid_move:
+                    dir_key = random.choice(list(self.direction.keys()))
+                    dx, dy, _, _ = self.direction[dir_key]
+                    nx, ny = x + dx, y + dy
+
+                    if 0 <= nx < self.width and 0 <= ny < self.height \
+                        and not self.cells[ny][nx].is_blocked:
+                        valid_move = True
+
+                if (nx, ny) in path:
+                    index = path.index((nx, ny))
+                    path = path[:index + 1]
+                else:
+                    path.append((nx, ny))
+
+                x, y = nx, ny
+
+            while len(path) > 1:
+                x, y = path.pop(0)
+                nx, ny = path[0]   # next cell
+
+    # break walls
+                if (x + 1, y) == (nx, ny):
+                    self.cells[y][x].walls['E'] = False
+                    self.cells[ny][nx].walls['W'] = False
+
+                elif (x - 1, y) == (nx, ny):
+                    self.cells[y][x].walls['W'] = False
+                    self.cells[ny][nx].walls['E'] = False
+
+                elif (x, y + 1) == (nx, ny):
+                    self.cells[y][x].walls['S'] = False
+                    self.cells[ny][nx].walls['N'] = False
+
+                elif (x, y - 1) == (nx, ny):
+                    self.cells[y][x].walls['N'] = False
+                    self.cells[ny][nx].walls['S'] = False
+
+    # mark visited
+                if (x, y) in unvisited:
+                    unvisited.remove((x, y))
+                    self.cells[y][x].is_visited = True
+
+                if (nx, ny) in unvisited:
+                    unvisited.remove((nx, ny))
+                    self.cells[ny][nx].is_visited = True
+    
+
